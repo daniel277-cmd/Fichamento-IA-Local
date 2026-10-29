@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fichário — Assistente Acadêmico de Luxo</title>
+<meta name="description" content="Envie um texto ou PDF e receba uma ficha de estudo de alta precisão com tese, conceitos-chave, argumentos e auto-teste. 100% privado e local.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          lux: {
+            bg: '#080C0A',
+            card: '#111915',
+            cardHover: '#16231C',
+            border: '#1E3326',
+            borderGlow: '#2E523C',
+            accent: '#C6F63C',
+            accentHover: '#B2E02D',
+            muted: '#8A9E92',
+            subtle: '#3B5244'
+          }
+        },
+        fontFamily: {
+          sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif']
+        },
+        boxShadow: {
+          'glow': '0 0 40px -10px rgba(198, 246, 60, 0.15)',
+          'glow-lg': '0 0 60px -15px rgba(198, 246, 60, 0.25)',
+          'card': '0 10px 30px -10px rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }
+  }
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { background-color: #080C0A; color: #F1F5F3; font-feature-settings: "cv02", "cv03", "cv04", "cv11"; }
+  ::selection { background: #C6F63C; color: #080C0A; }
+  
+  .glass-card {
+    background: linear-gradient(135deg, rgba(17, 25, 21, 0.8) 0%, rgba(10, 15, 12, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(30, 51, 38, 0.6);
+  }
+  
+  .glass-header {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-header.no-scroll {
+    background: rgba(11, 17, 14, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(30, 51, 38, 0.6);
+    border-bottom: 1px solid rgba(198, 246, 60, 0.2);
+    opacity: 1;
+  }
+
+  .glass-header.scrolled {
+    background: rgba(11, 17, 14, 0.08);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(30, 51, 38, 0.15);
+    border-bottom: 1px solid rgba(198, 246, 60, 0.08);
+    opacity: 0.25;
+  }
+
+  .glass-header:hover {
+    background: rgba(11, 17, 14, 0.95) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border-color: rgba(30, 51, 38, 0.6) !important;
+    border-bottom-color: rgba(198, 246, 60, 0.3) !important;
+    opacity: 1 !important;
+    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.8), 0 0 30px -5px rgba(198, 246, 60, 0.15) !important;
+  }
+  
+  .glass-card-hover {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .glass-card-hover:hover {
+    background: linear-gradient(135deg, rgba(22, 35, 28, 0.9) 0%, rgba(14, 22, 18, 0.95) 100%);
+    border-color: rgba(198, 246, 60, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.7), 0 0 25px -5px rgba(198, 246, 60, 0.1);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 100ms);
+  }
+
+  .btn-glow {
+    position: relative;
+  }
+  .btn-glow::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(90deg, #C6F63C, #43E660, #C6F63C);
+    border-radius: 9999px;
+    z-index: -1;
+    filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .btn-glow:hover::after {
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body class="antialiased selection:bg-lux-accent selection:text-lux-bg">
+
+<header class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-6 pointer-events-none">
+  <div id="header-container" class="glass-header no-scroll pointer-events-auto mx-auto max-w-[1400px] flex items-center justify-between px-6 py-4 rounded-2xl shadow-2xl">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-lux-accent to-emerald-600 flex items-center justify-center text-lux-bg font-extrabold text-lg shadow-lg shadow-lux-accent/20">
+        F
+      </div>
+      <span class="text-xl font-bold tracking-tight text-white">Fichário<span class="text-lux-accent">.ai</span></span>
+    </div>
+    <div class="flex items-center gap-6">
+      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-lux-card border border-lux-border text-xs font-medium text-lux-muted">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Ollama Local Ativo
+      </div>
+      <a href="#envio" class="text-sm font-semibold text-white hover:text-lux-accent transition-colors">Iniciar Ficha</a>
+    </div>
+  </div>
+</header>
+
+<main class="relative overflow-hidden pt-32 pb-20">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-emerald-900/20 via-emerald-600/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute top-[40%] -left-[10%] w-[500px] h-[500px] bg-lux-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+
+  <section id="envio" aria-labelledby="titulo" class="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto pt-10 pb-12">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lux-card border border-lux-border text-lux-accent text-xs font-bold uppercase tracking-widest mb-6 animate-fade-in" style="--i:0">
+        Intelligence Architecture v3.0
+      </div>
+      <h1 id="titulo" class="animate-fade-in text-[clamp(2.5rem,6vw,5.5rem)] font-extrabold tracking-tight text-white leading-[1.05]" style="--i:1">
+        Do documento bruto à <span class="text-transparent bg-clip-text bg-gradient-to-r from-lux-accent via-emerald-300 to-emerald-500">perfeição acadêmica</span>.
+      </h1>
+      <p class="animate-fade-in mt-6 text-lg sm:text-xl text-lux-muted leading-relaxed" style="--i:2">
+        Processe artigos e PDFs instantaneamente com uma IA 100% privada rodando na sua máquina. Tese, conceitos e gabaritos cirúrgicos.
+      </p>
+    </div>
+
+    <div class="animate-fade-in max-w-4xl mx-auto mt-4" style="--i:3">
+      <form id="form" novalidate class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
+        <div class="absolute inset-0 bg-gradient-to-r from-lux-accent/0 via-lux-accent/[0.03] to-lux-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+        <input id="arquivo" name="arquivo" type="file" accept=".txt,.pdf,text/plain,application/pdf" class="peer sr-only">
+        
+        <label id="zona" for="arquivo" data-arrastando="false"
+          class="relative flex min-h-[320px] cursor-pointer flex-col items-center justify-center gap-6 rounded-2xl border-2 border-dashed border-lux-border bg-lux-card/40 px-6 py-12 text-center transition-all duration-300 hover:border-lux-accent/50 hover:bg-lux-card/80 data-[arrastando=true]:border-lux-accent data-[arrastando=true]:bg-lux-card">
+          
+          <div class="w-20 h-20 rounded-2xl bg-lux-border/40 border border-lux-border flex items-center justify-center text-lux-accent group-hover:scale-110 group-hover:bg-lux-accent/10 transition-all duration-300 shadow-xl">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <div class="space-y-2">
+            <span id="zona-titulo" class="block text-xl sm:text-2xl font-bold text-white tracking-tight">Solte o seu PDF ou TXT aqui</span>
+            <span id="zona-detalhe" class="block text-sm text-lux-muted">ou clique para explorar os arquivos do computador</span>
+          </div>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lux-border/30 border border-lux-border/50 text-xs text-lux-muted font-medium">
+            <span>Suporta arquivos .PDF e .TXT até 200MB</span>
+          </div>
+        </label>
+
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3 text-sm text-lux-muted">
+            <svg class="w-5 h-5 text-lux-accent shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Processamento local blindado. Seus dados nunca saem do PC.</span>
+          </div>
+          <button id="processar" type="submit" disabled
+            class="btn-glow w-full sm:w-auto min-h-[56px] px-8 rounded-2xl bg-lux-accent font-bold text-lux-bg transition-all duration-300 enabled:hover:bg-lux-accentHover enabled:hover:scale-[1.02] enabled:active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-lux-border disabled:text-lux-muted shadow-lg shadow-lux-accent/10">
+            Gerar Ficha Analítica
+          </button>
+        </div>
+        <p id="estado" role="status" aria-live="polite" class="mt-4 min-h-[28px] text-center text-sm font-medium text-lux-accent"></p>
+      </form>
+    </div>
+  </section>
+
+  <section id="ficha" aria-label="Ficha" class="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 mt-24">
+    <div id="vazio">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <span class="text-lux-accent text-xs font-bold uppercase tracking-widest">Arquitetura de Dados</span>
+          <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-2">O que sua ficha inclui</h2>
+        </div>
+        <p class="mt-4 md:mt-0 text-lux-muted text-sm">
+          Quer testar instantaneamente? <button id="exemplo" type="button" class="text-lux-accent font-bold underline underline-offset-4 hover:text-white transition-colors">Carregar fichamento de exemplo</button>.
+        </p>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="glass-card glass-card-hover rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+          <div class="w-12 h-12 rounded-xl bg-lux-accent/10 border border-lux-accent/20 flex items-center justify-center text-lux-accent font-bold mb-6 text-lg">01</div>
+          <div>
+            <h3 class="text-xl font-bold text-white tracking-tight">Tese Principal</h3>
+            <p class="mt-3 text-sm text-lux-muted leading-relaxed">A síntese absoluta da ideia central do autor destilada em até três linhas cirúrgicas.</p>
+          </div>
+        </div>
+        <div class="glass-card glass-card-hover rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+          <div class="w-12 h-12 rounded-xl bg-lux-accent/10 border border-lux-accent/20 flex items-center justify-center text-lux-accent font-bold mb-6 text-lg">02</div>
+          <div>
+            <h3 class="text-xl font-bold text-white tracking-tight">Conceitos-Chave</h3>
+            <p class="mt-3 text-sm text-lux-muted leading-relaxed">Os pilares conceituais fundamentais extraídos com definições de alto nível.</p>
+          </div>
+        </div>
+        <div class="glass-card glass-card-hover rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+          <div class="w-12 h-12 rounded-xl bg-lux-accent/10 border border-lux-accent/20 flex items-center justify-center text-lux-accent font-bold mb-6 text-lg">03</div>
+          <div>
+            <h3 class="text-xl font-bold text-white tracking-tight">Descobertas</h3>
+            <p class="mt-3 text-sm text-lux-muted leading-relaxed">Os argumentos centrais e conclusões do autor explicados de forma analítica e direta.</p>
+          </div>
+        </div>
+        <div class="glass-card glass-card-hover rounded-2xl p-6 sm:p-8 flex flex-col justify-between">
+          <div class="w-12 h-12 rounded-xl bg-lux-accent/10 border border-lux-accent/20 flex items-center justify-center text-lux-accent font-bold mb-6 text-lg">04</div>
+          <div>
+            <h3 class="text-xl font-bold text-white tracking-tight">Auto-Teste & Gabarito</h3>
+            <p class="mt-3 text-sm text-lux-muted leading-relaxed">Questões dissertativas avançadas no padrão universitário com padrão de correção.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="resultado" hidden class="space-y-8">
+      <div class="glass-card rounded-3xl p-8 flex flex-wrap items-center justify-between gap-6">
+        <div>
+          <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">Fichamento Concluído</span>
+          <h2 id="ficha-titulo" tabindex="-1" class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mt-3">Análise Documental</h2>
+          <p id="ficha-arquivo" class="mt-1 text-sm text-lux-muted"></p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button id="copiar" type="button" class="px-6 py-3 rounded-xl bg-lux-card border border-lux-border text-white text-sm font-semibold hover:bg-lux-cardHover hover:border-lux-accent/40 transition-all shadow-md">Copiar Ficha</button>
+          <button id="baixar" type="button" class="px-6 py-3 rounded-xl bg-lux-accent text-lux-bg text-sm font-bold hover:bg-lux-accentHover transition-all shadow-lg shadow-lux-accent/20">Baixar .TXT</button>
+        </div>
+      </div>
+      <p id="anuncio" role="status" aria-live="polite" class="text-sm font-medium text-lux-accent text-center min-h-[24px]"></p>
+
+      <div class="glass-card rounded-3xl p-8 sm:p-10 border-l-4 border-l-lux-accent">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-lux-accent mb-4">01. Tese Principal</h3>
+        <p id="r-tese" class="text-xl sm:text-2xl text-white font-medium leading-relaxed"></p>
+      </div>
+
+      <div class="glass-card rounded-3xl p-8 sm:p-10">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-lux-accent mb-6">02. Conceitos-Chave</h3>
+        <dl id="r-conceitos" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"></dl>
+      </div>
+
+      <div class="glass-card rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-lux-card via-lux-card to-emerald-950/20">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-lux-accent mb-6">03. Principais Descobertas & Argumentos</h3>
+        <div id="r-argumentos" class="grid gap-6"></div>
+      </div>
+
+      <div class="glass-card rounded-3xl p-8 sm:p-10">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-lux-accent mb-6">04. Auto-Teste & Gabarito Universitário</h3>
+        <div id="r-questoes" class="space-y-4"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-lux-border/40 mt-32 bg-lux-bg py-16 text-center relative z-10">
+  <div class="mx-auto max-w-[1200px] px-4">
+    <div class="flex items-center justify-center gap-3 mb-4">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-lux-accent to-emerald-600 flex items-center justify-center text-lux-bg font-extrabold text-sm shadow-md">
+        F
+      </div>
+      <span class="text-lg font-bold tracking-tight text-white">Fichário<span class="text-lux-accent">.ai</span></span>
+    </div>
+    <p class="text-sm text-lux-muted max-w-md mx-auto">Tudo roda localmente no seu computador com tecnologia Ollama e Llama 3. Privacidade absoluta.</p>
+    <p class="text-xs text-lux-muted/60 mt-8">© 2026 Fichário. Desenvolvido com excelência estética e funcional.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var headerContainer = document.getElementById('header-container');
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 40) {
+      headerContainer.classList.remove('no-scroll');
+      headerContainer.classList.add('scrolled');
+    } else {
+      headerContainer.classList.remove('scrolled');
+      headerContainer.classList.add('no-scroll');
+    }
+  });
+
+  var API_URL = 'http://localhost:8000/fichar';
+  var EXEMPLO = {
+    tese: 'A autonomia de estudo acadêmico consolida-se através da capacidade sistemática de registrar, sintetizar e autoavaliar conteúdos, superando a mera dependência de ferramentas digitais.',
+    conceitos: [
+      { termo: 'Letramento digital acadêmico', definicao: 'Habilidade crítica de localizar, filtrar e reestruturar informações.' },
+      { termo: 'Seleção cognitiva', definicao: 'Mecanismo de triagem que separa o ruído informacional do conteúdo.' },
+      { termo: 'Fluência instrumental', definicao: 'Domínio operacional de softwares que, isoladamente, não garante retenção.' }
+    ],
+    argumentos: [
+      'A dependência exclusiva de resumos automáticos enfraquece a retenção cognitiva, pois elimina a etapa de atrito mental necessária para a aprendizagem real.',
+      'Ferramentas digitais devem atuar como facilitadores de triagem (como extrair conceitos), mas não como substitutos do pensamento reflexivo humano.'
+    ],
+    questoes: [
+      {
+        pergunta: 'Por que o excesso de disponibilidade informacional transformou a seleção de conteúdos no principal gargalo?',
+        gabarito: 'Demonstrar que o desafio principal deixou de ser a busca e passou a ser a curadoria rigorosa, exigindo critérios analíticos.'
+      },
+      {
+        pergunta: 'Diferencie fluência instrumental de letramento acadêmico.',
+        gabarito: 'Articular que a fluência instrumental restringe-se ao domínio técnico, enquanto o letramento acadêmico envolve a habilidade de processar criticamente a informação.'
+      }
+    ]
+  };
+
+  var $ = function (s) { return document.querySelector(s); };
+  var form = $('#form');
+  var input = $('#arquivo');
+  var zona = $('#zona');
+  var zonaTitulo = $('#zona-titulo');
+  var zonaDetalhe = $('#zona-detalhe');
+  var botao = $('#processar');
+  var estado = $('#estado');
+  var anuncio = $('#anuncio');
+  var vazio = $('#vazio');
+  var resultado = $('#resultado');
+  var arquivo = null;
+  var ficha = null;
+  var reduzir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function h(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+
+  function tamanho(bytes) {
+    if (bytes < 1048576) return Math.max(1, Math.round(bytes / 1024)) + ' KB';
+    return (bytes / 1048576).toFixed(1).replace('.', ',') + ' MB';
+  }
+
+  function texto(v) { return typeof v === 'string' ? v.trim() : ''; }
+
+  function normalizar(d) {
+    d = d && typeof d === 'object' ? d : {};
+    return {
+      tese: texto(d.tese),
+      conceitos: (Array.isArray(d.conceitos) ? d.conceitos : []).map(function (c) {
+        return { termo: texto(c && c.termo), definicao: texto(c && c.definicao) };
+      }).filter(function (c) { return c.termo || c.definicao; }),
+      argumentos: (Array.isArray(d.argumentos) ? d.argumentos : []).map(texto).filter(Boolean),
+      questoes: (Array.isArray(d.questoes) ? d.questoes : []).map(function (q) {
+        return { pergunta: texto(q && q.pergunta), gabarito: texto(q && q.gabarito) };
+      }).filter(function (q) { return q.pergunta; })
+    };
+  }
+
+  function restaurarZona() {
+    zonaTitulo.textContent = 'Solte o seu PDF ou TXT aqui';
+    zonaDetalhe.textContent = 'ou clique para explorar os arquivos do computador';
+  }
+
+  function escolher(f) {
+    if (!f) return;
+    if (!/\.(txt|pdf)$/i.test(f.name)) {
+      arquivo = null;
+      botao.disabled = true;
+      restaurarZona();
+      estado.textContent = 'Formato inválido. Utilize um arquivo .txt ou .pdf.';
+      return;
+    }
+    arquivo = f;
+    zonaTitulo.textContent = f.name;
+    zonaDetalhe.textContent = tamanho(f.size) + ' • Pronto para análise inteligente';
+    botao.disabled = false;
+    estado.textContent = '';
+  }
+
+  function ocupado(sim) {
+    botao.disabled = sim || !arquivo;
+    botao.textContent = sim ? 'Processando Ficha...' : 'Gerar Ficha Analítica';
+    botao.setAttribute('aria-busy', sim ? 'true' : 'false');
+    estado.classList.toggle('animate-pulse', sim);
+    if (sim) estado.textContent = 'IA analisando documento com Llama 3 (Local)...';
+  }
+
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    zona.addEventListener(ev, function (e) {
+      e.preventDefault();
+      zona.dataset.arrastando = 'true';
+    });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    zona.addEventListener(ev, function (e) {
+      e.preventDefault();
+      zona.dataset.arrastando = 'false';
+    });
+  });
+  zona.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    escolher(f);
+  });
+  input.addEventListener('change', function () { escolher(input.files[0]); });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!arquivo) return;
+    ocupado(true);
+    var dados = new FormData();
+    dados.append('arquivo', arquivo);
+    fetch(API_URL, { method: 'POST', body: dados })
+      .then(function (resp) {
+        if (!resp.ok) {
+          return resp.json().catch(function () { return {}; }).then(function (j) {
+            throw new Error(j.erro || ('O servidor respondeu com erro ' + resp.status + '.'));
+          });
+        }
+        return resp.json();
+      })
+      .then(function (json) {
+        estado.textContent = '';
+        mostrar(json, arquivo.name);
+      })
+      .catch(function (err) {
+        estado.textContent = err instanceof TypeError
+          ? 'Servidor local inativo. Certifique-se de que o backend Python e o Ollama estão rodando.'
+          : err.message;
+      })
+      .then(function () { ocupado(false); });
+  });
+
+  function vazioMsg(texto) { return h('p', 'text-sm text-lux-muted', texto); }
+
+  function mostrar(dados, nome) {
+    ficha = normalizar(dados);
+    ficha.arquivo = nome;
+    $('#ficha-arquivo').textContent = 'Ficha gerada cirurgicamente a partir de ' + nome;
+    $('#r-tese').textContent = ficha.tese || 'A IA não devolveu uma tese para este documento.';
+
+    var conceitos = $('#r-conceitos');
+    conceitos.replaceChildren();
+    if (!ficha.conceitos.length) conceitos.append(vazioMsg('Nenhum conceito retornado.'));
+    ficha.conceitos.forEach(function (c) {
+      var item = h('div', 'p-6 rounded-2xl bg-lux-card/60 border border-lux-border/80 hover:border-lux-accent/30 transition-all');
+      item.append(
+        h('h4', 'text-lg font-bold text-white tracking-tight mb-2', c.termo),
+        h('p', 'text-sm text-lux-muted leading-relaxed', c.definicao)
+      );
+      conceitos.append(item);
+    });
+
+    var argContainer = $('#r-argumentos');
+    argContainer.replaceChildren();
+    if (!ficha.argumentos.length) argContainer.append(vazioMsg('Nenhum argumento retornado.'));
+    ficha.argumentos.forEach(function (c) {
+      var bq = h('blockquote', 'p-6 rounded-2xl bg-lux-card/80 border border-lux-border text-lg font-medium text-white relative overflow-hidden');
+      bq.innerHTML = '<span class="absolute left-0 top-0 bottom-0 w-1.5 bg-lux-accent"></span><span class="pl-2 block leading-relaxed">' + c + '</span>';
+      argContainer.append(bq);
+    });
+
+    var questoes = $('#r-questoes');
+    questoes.replaceChildren();
+    if (!ficha.questoes.length) questoes.append(vazioMsg('Nenhuma questão retornada.'));
+    ficha.questoes.forEach(function (q, idx) {
+      var det = h('details', 'group rounded-2xl bg-lux-card/60 border border-lux-border/80 overflow-hidden transition-all');
+      var sum = h('summary', 'flex cursor-pointer items-center justify-between p-6 select-none font-semibold text-white hover:bg-lux-card/90 transition-colors');
+      var qText = h('span', 'pr-4 text-base', 'Questão ' + (idx + 1) + ': ' + q.pergunta);
+      var badge = h('span', 'px-3 py-1 rounded-full bg-lux-accent/10 border border-lux-accent/20 text-lux-accent text-xs font-bold shrink-0 group-open:bg-lux-accent group-open:text-lux-bg transition-colors');
+      badge.textContent = 'Ver Gabarito';
+      sum.append(qText, badge);
+      var resp = h('div', 'p-6 bg-lux-bg/60 border-t border-lux-border text-sm text-lux-muted leading-relaxed');
+      resp.innerHTML = '<strong class="text-lux-accent font-bold uppercase tracking-wider text-xs block mb-2">Padrão de Correção / Gabarito:</strong>' + (q.gabarito || 'Sem gabarito informado.');
+      det.append(sum, resp);
+      questoes.append(det);
+    });
+
+    vazio.hidden = true;
+    resultado.hidden = false;
+    anuncio.textContent = '';
+    var titulo = $('#ficha-titulo');
+    titulo.scrollIntoView({ behavior: reduzir ? 'auto' : 'smooth', block: 'start' });
+    titulo.focus({ preventScroll: true });
+  }
+
+  function comoTexto(f) {
+    var L = [];
+    L.push('Fichamento de ' + f.arquivo, '');
+    L.push('Tese principal', f.tese, '');
+    L.push('Conceitos-chave');
+    f.conceitos.forEach(function (c) { L.push('- ' + c.termo + ': ' + c.definicao); });
+    L.push('', 'Principais Descobertas & Argumentos');
+    f.argumentos.forEach(function (c) { L.push('- ' + c); });
+    L.push('', 'Auto-teste e gabarito');
+    f.questoes.forEach(function (q, i) {
+      L.push((i + 1) + '. ' + q.pergunta, 'Gabarito: ' + q.gabarito, '');
+    });
+    return L.join('\n');
+  }
+
+  $('#copiar').addEventListener('click', function () {
+    if (!ficha) return;
+    var ok = navigator.clipboard && navigator.clipboard.writeText(comoTexto(ficha));
+    if (!ok) { anuncio.textContent = 'Erro ao copiar. Use o botão Baixar em .txt.'; return; }
+    ok.then(function () { anuncio.textContent = 'Ficha copiada para a área de transferência com sucesso.'; })
+      .catch(function () { anuncio.textContent = 'Erro ao copiar.'; });
+  });
+
+  $('#baixar').addEventListener('click', function () {
+    if (!ficha) return;
+    var blob = new Blob([comoTexto(ficha)], { type: 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (ficha.arquivo || 'ficha').replace(/\.[^.]+$/, '') + '-ficha-lux.txt';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    anuncio.textContent = 'Arquivo de ficha baixado com sucesso.';
+  });
+
+  $('#exemplo').addEventListener('click', function () {
+    mostrar(EXEMPLO, 'letramento-digital-avancado.pdf (exemplo)');
+  });
+})();
+</script>
+</body>
+</html>
